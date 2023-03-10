@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+import 'package:toon/models/webtoon_model.dart';
 
 class ApiService {
   final String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev";
-
   final String today = 'today';
 
-  void getTodaysToons() async {
+  List<WebtoonModel> webtoonInstances = [];
+
+  Future<List<WebtoonModel>> getTodaysToons() async {
     final url = Uri.parse('$baseUrl/$today');
 
     final response = await http.get(url);
@@ -15,8 +19,14 @@ class ApiService {
     //웹툰 데이터를 받기전에 다음 코드를 실행하면 안됨 --> await async 비동기 처리
 
     if (response.statusCode == 200) {
-      print(response.body);
-      return;
+      final List<dynamic> webtoons = jsonDecode(response.body);
+
+      for (var webtoon in webtoons) {
+        var toon = WebtoonModel.fromJson(webtoon);
+        webtoonInstances.add(toon);
+        // print(toon.title);
+      }
+      return webtoonInstances;
     }
     throw Error();
   }
