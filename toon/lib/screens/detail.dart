@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:toon/models/detail_model.dart';
+import 'package:toon/models/episode_model.dart';
+import 'package:toon/services/api_service.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final String title, thumb, id;
 
   const DetailScreen({
@@ -11,6 +14,21 @@ class DetailScreen extends StatelessWidget {
   });
 
   @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  late Future<DetailModel> webtoon;
+  late Future<List<EpisodeModel>> episodes;
+
+  @override
+  void initState() {
+    super.initState();
+    webtoon = ApiService.getToonById(widget.id);
+    episodes = ApiService.getEpisodesById(widget.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -19,7 +37,7 @@ class DetailScreen extends StatelessWidget {
         foregroundColor: Colors.white,
         backgroundColor: const Color.fromARGB(255, 37, 37, 37),
         title: Text(
-          title,
+          widget.title,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w500,
@@ -35,7 +53,7 @@ class DetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Hero(
-                tag: id,
+                tag: widget.id,
                 child: Container(
                   width: 100,
                   clipBehavior: Clip.hardEdge,
@@ -48,7 +66,7 @@ class DetailScreen extends StatelessWidget {
                             color: Colors.black.withOpacity(0.3))
                       ]),
                   child: Image.network(
-                    thumb,
+                    widget.thumb,
                     headers: const {
                       "User-Agent":
                           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
